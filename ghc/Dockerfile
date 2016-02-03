@@ -3,7 +3,7 @@ FROM onion-omega-xt
 
 # gmp is not really needed since we build GHC with integer-simple, but it
 # doesn't hurt to have it around.
-ADD https://gmplib.org/download/gmp/gmp-6.1.0.tar.xz
+ADD https://gmplib.org/download/gmp/gmp-6.1.0.tar.xz gmp-6.1.0.tar.xz
 RUN tar xf gmp-6.1.0.tar.xz && \
     cd gmp-6.1.0 && \
     ./configure --host=mips-unknown-linux-musl --prefix=/opt/omega && \
@@ -11,7 +11,7 @@ RUN tar xf gmp-6.1.0.tar.xz && \
 
 
 # ncurses however is required.
-ADD https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.0.tar.gz
+ADD https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.0.tar.gz ncurses-6.0.tar.gz
 RUN tar xf ncurses-6.0.tar.gz && \
     cd ncurses-6.0 && \
     sed -ie '65s/$1/$1 -P/' ncurses/base/MKlib_gen.sh && \
