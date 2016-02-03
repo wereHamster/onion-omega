@@ -1,0 +1,2 @@
+INTEGER_LIBRARY = integer-simple
+HADDOCK_DOCS = NO
