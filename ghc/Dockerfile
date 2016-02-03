@@ -19,6 +19,7 @@ RUN tar xf ncurses-6.0.tar.gz && \
     make install -j4
 
 
+RUN apt-get install -y ghc happy alex
 RUN git clone --recursive git://git.haskell.org/ghc.git
 ADD build.mk ghc/mk/build.mk
 RUN cd ghc && \
