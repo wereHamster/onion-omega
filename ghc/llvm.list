@@ -1,0 +1,2 @@
+deb http://llvm.org/apt/wily/ llvm-toolchain-wily-3.7 main
+deb-src http://llvm.org/apt/wily/ llvm-toolchain-wily-3.7 main
