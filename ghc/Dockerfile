@@ -24,6 +24,7 @@ RUN git clone --recursive git://git.haskell.org/ghc.git
 ADD build.mk ghc/mk/build.mk
 RUN cd ghc && \
     ./boot && \
-    ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised && \
+    ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
+        --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib && \
     (make -j4 ||:) && make install -j4
 
