@@ -5,8 +5,8 @@ RUN apt-get install -y gawk bison flex gperf cvs texinfo automake \
     libtool ncurses-dev g++ subversion python-dev libexpat1-dev cmake \
     git wget build-essential help2man libtool libtool-bin
 
-RUN git clone https://github.com/crosstool-ng/crosstool-ng.git /opt/xt/source
-RUN cd /opt/xt/source && ./bootstrap && ./configure --prefix=/usr && make && make install
+RUN git clone https://github.com/crosstool-ng/crosstool-ng.git /opt/source/xt
+RUN cd /opt/source/xt && ./bootstrap && ./configure --prefix=/usr && make && make install
 
 RUN useradd -m xt
 RUN mkdir -p /var/cache/xt /opt/xt && chown xt /var/cache/xt /opt/xt
