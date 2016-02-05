@@ -1,0 +1,52 @@
+From 8c4f939064ec1dc4dc42d1c716c2c47487c3e2c7 Mon Sep 17 00:00:00 2001
+From: Tomas Carnecky <tomas.carnecky@gmail.com>
+Date: Thu, 4 Feb 2016 21:34:27 +0100
+Subject: [PATCH 1/2] LLVM MIPS EB / Linux
+
+---
+ compiler/llvmGen/LlvmCodeGen/Ppr.hs | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/compiler/llvmGen/LlvmCodeGen/Ppr.hs b/compiler/llvmGen/LlvmCodeGen/Ppr.hs
+index 1de630e..b71185d 100644
+--- a/compiler/llvmGen/LlvmCodeGen/Ppr.hs
++++ b/compiler/llvmGen/LlvmCodeGen/Ppr.hs
+@@ -71,6 +71,9 @@ moduleLayout = sdocWithPlatform $ \platform ->
+     Platform { platformArch = ArchARM64, platformOS = OSLinux } ->
+         text "target datalayout = \"e-m:e-i64:64-i128:128-n32:64-S128\""
+         $+$ text "target triple = \"aarch64-unknown-linux-gnu\""
++    Platform { platformArch = ArchMipseb, platformOS = OSLinux } ->
++        text "target datalayout = \"E-m:m-p:32:32-i8:8:32-i16:16:32-i64:64-n32-S64\""
++        $+$ text "target triple = \"mips-linux-gnu\""
+     _ ->
+         if platformIsCrossCompiling platform
+             then panic "LlvmCodeGen.Ppr: Cross compiling without valid target info."
+-- 
+2.6.2
+
+
+From fe308ef29f6d26eaf1eb7a04bbbd32afea799673 Mon Sep 17 00:00:00 2001
+From: Tomas Carnecky <tomas.carnecky@gmail.com>
+Date: Fri, 5 Feb 2016 20:18:30 +0100
+Subject: [PATCH 2/2] Fix for cross-compiling with host=LE and target=BE
+
+---
+ compiler/llvmGen/Llvm/Types.hs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/compiler/llvmGen/Llvm/Types.hs b/compiler/llvmGen/Llvm/Types.hs
+index 5c2ce5e..0d52c65 100644
+--- a/compiler/llvmGen/Llvm/Types.hs
++++ b/compiler/llvmGen/Llvm/Types.hs
+@@ -861,7 +861,7 @@ ppFloat = ppDouble . widenFp
+ -- | Reverse or leave byte data alone to fix endianness on this target.
+ fixEndian :: [a] -> [a]
+ #ifdef WORDS_BIGENDIAN
+-fixEndian = id
++fixEndian = reverse
+ #else
+ fixEndian = reverse
+ #endif
+-- 
+2.6.2
+
