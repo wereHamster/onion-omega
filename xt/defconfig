@@ -6,3 +6,4 @@ CT_ARCH_TUNE="24kc"
 CT_ARCH_mips=y
 CT_KERNEL_linux=y
 CT_LIBC_uClibc=y
+CT_LIBC_UCLIBC_V_0_9_33_2=y
