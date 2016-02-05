@@ -11,7 +11,7 @@ RUN tar xf /opt/source/gmp-6.1.0.tar.xz -C /opt/source && \
 
 
 # ncurses however is required.
-ADD https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.0.tar.gz ncurses-6.0.tar.gz
+ADD https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.0.tar.gz /opt/source/ncurses-6.0.tar.gz
 RUN tar xf /opt/source/ncurses-6.0.tar.gz -C /opt/source && \
     cd /opt/source/ncurses-6.0 && \
     sed -ie '65s/$1/$1 -P/' ncurses/base/MKlib_gen.sh && \
