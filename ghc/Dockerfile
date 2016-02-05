@@ -20,5 +20,5 @@ RUN cd /opt/source/ghc && \
     ./boot && \
     ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
         --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib && \
-    make install -j4
+    make -j4 && make install
 
