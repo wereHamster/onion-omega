@@ -14,4 +14,5 @@ RUN mkdir -p /var/cache/xt /opt/xt && chown xt /var/cache/xt /opt/xt
 ADD defconfig /home/xt/defconfig
 RUN su -lc 'ct-ng defconfig && ct-ng source && ct-ng build' xt
 
-ENV PATH=/opt/xt/mips-unknown-linux-musl/bin:$PATH
+ENV TARGET=mips-unknown-linux-uclibc
+ENV PATH=/opt/xt/$TARGET/bin:$PATH
