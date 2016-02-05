@@ -16,7 +16,7 @@ RUN git clone --recursive git://git.haskell.org/ghc.git /opt/source/ghc
 ADD build.mk /opt/source/ghc/mk/build.mk
 ADD ghc.patch /opt/source/ghc/ghc.patch
 RUN cd /opt/source/ghc && \
-    git am < ./ghc.patch && \
+    git apply ./ghc.patch && \
     ./boot && \
     ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
         --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib && \
