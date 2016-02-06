@@ -12,7 +12,7 @@ RUN useradd -m xt
 RUN mkdir -p /var/cache/xt /opt/xt && chown xt /var/cache/xt /opt/xt
 
 ADD defconfig /home/xt/defconfig
-RUN su -lc 'ct-ng defconfig && ct-ng source && ct-ng build' xt
+RUN su -lc 'ct-ng defconfig && ct-ng source && ct-ng build -j$(grep -c ^processor /proc/cpuinfo)' xt
 
 ENV TARGET=mips-unknown-linux-musl
 ENV PATH=/opt/xt/$TARGET/bin:$PATH
