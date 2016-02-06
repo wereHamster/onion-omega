@@ -15,7 +15,5 @@ ADD defconfig /home/xt/defconfig
 RUN su -lc 'ct-ng defconfig && ct-ng source' xt
 RUN su -lc 'ct-ng build.$(grep -c ^processor /proc/cpuinfo)' xt
 
-RUN rm -rf /var/cache/xt
-
 ENV TARGET=mips-unknown-linux-musl
 ENV PATH=/opt/xt/$TARGET/bin:$PATH
