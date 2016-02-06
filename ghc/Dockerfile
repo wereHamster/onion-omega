@@ -7,7 +7,7 @@ RUN tar xf /opt/source/ncurses-6.0.tar.gz -C /opt/source && \
     cd /opt/source/ncurses-6.0 && \
     sed -ie '65s/$1/$1 -P/' ncurses/base/MKlib_gen.sh && \
     ./configure --host=mips-unknown-linux-musl --prefix=/opt/omega --enable-overwrite && \
-    make install -j4
+    make install -j$(grep -c ^processor /proc/cpuinfo)
 
 
 ADD llvm.list /etc/apt/sources.list.d/llvm.list
@@ -20,5 +20,5 @@ RUN cd /opt/source/ghc && \
     ./boot && \
     ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
         --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib && \
-    make -j4 && make install
+    make -j$(grep -c ^processor /proc/cpuinfo) && make install
 
