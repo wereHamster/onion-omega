@@ -21,5 +21,7 @@ RUN cd /opt/source/ghc && \
     ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
         --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib
 
-RUN make -j$(grep -c ^processor /proc/cpuinfo) && make install
+RUN cd /opt/source/ghc && \
+    make -j$(grep -c ^processor /proc/cpuinfo) && \
+    make install
 
