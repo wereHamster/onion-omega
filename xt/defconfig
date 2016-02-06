@@ -1,8 +1,7 @@
 CT_WORK_DIR="/var/cache/xt"
 CT_PREFIX_DIR="/opt/xt/${CT_TARGET}"
-CT_PARALLEL_JOBS=4
-CT_ARCH_ARCH="mips32r2"
-CT_ARCH_TUNE="mips32r2"
+CT_ARCH_ARCH="mips2"
+CT_ARCH_TUNE="mips2"
 CT_ARCH_mips=y
 CT_KERNEL_linux=y
 CT_LIBC_musl=y
