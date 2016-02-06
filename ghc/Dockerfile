@@ -19,6 +19,7 @@ RUN cd /opt/source/ghc && \
     git apply ./ghc.patch && \
     ./boot && \
     ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
-        --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib && \
-    make -j$(grep -c ^processor /proc/cpuinfo) && make install
+        --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib
+
+RUN make -j$(grep -c ^processor /proc/cpuinfo) && make install
 
