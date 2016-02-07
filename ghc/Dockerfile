@@ -1,14 +1,11 @@
 FROM onion-omega-xt
 
-
-# ncurses however is required.
 ADD https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.0.tar.gz /opt/source/ncurses-6.0.tar.gz
 RUN tar xf /opt/source/ncurses-6.0.tar.gz -C /opt/source && \
     cd /opt/source/ncurses-6.0 && \
     sed -ie '65s/$1/$1 -P/' ncurses/base/MKlib_gen.sh && \
     ./configure --host=mips-unknown-linux-musl --prefix=/opt/omega --enable-overwrite && \
     make install -j$(grep -c ^processor /proc/cpuinfo)
-
 
 ADD llvm.list /etc/apt/sources.list.d/llvm.list
 RUN apt-get update && apt-get install -y ghc happy alex llvm-3.7
