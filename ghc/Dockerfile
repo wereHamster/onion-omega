@@ -6,7 +6,7 @@ ADD https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.0.tar.gz /opt/source/ncurses-6
 RUN tar xf /opt/source/ncurses-6.0.tar.gz -C /opt/source && \
     cd /opt/source/ncurses-6.0 && \
     sed -ie '65s/$1/$1 -P/' ncurses/base/MKlib_gen.sh && \
-    ./configure --host=mips-unknown-linux-musl --prefix=/opt/omega --enable-overwrite && \
+    ./configure --host=mips-linux-musl --prefix=/opt/omega --enable-overwrite && \
     make install -j$(grep -c ^processor /proc/cpuinfo)
 
 
@@ -18,7 +18,7 @@ ADD ghc.patch /opt/source/ghc/ghc.patch
 RUN cd /opt/source/ghc && \
     git apply ./ghc.patch && \
     ./boot && \
-    ./configure --target=mips-unknown-linux-musl --prefix=/opt/ghc --enable-unregisterised \
+    ./configure --target=mips-linux-musl --prefix=/opt/ghc --enable-unregisterised \
         --with-curses-includes=/opt/omega/include --with-curses-libraries=/opt/omega/lib
 
 RUN cd /opt/source/ghc && \
