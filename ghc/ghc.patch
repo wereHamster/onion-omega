@@ -1,7 +1,7 @@
 From 8c4f939064ec1dc4dc42d1c716c2c47487c3e2c7 Mon Sep 17 00:00:00 2001
 From: Tomas Carnecky <tomas.carnecky@gmail.com>
 Date: Thu, 4 Feb 2016 21:34:27 +0100
-Subject: [PATCH 1/2] LLVM MIPS EB / Linux
+Subject: [PATCH 1/3] LLVM MIPS EB / Linux
 
 ---
  compiler/llvmGen/LlvmCodeGen/Ppr.hs | 3 +++
@@ -28,7 +28,7 @@ index 1de630e..b71185d 100644
 From fe308ef29f6d26eaf1eb7a04bbbd32afea799673 Mon Sep 17 00:00:00 2001
 From: Tomas Carnecky <tomas.carnecky@gmail.com>
 Date: Fri, 5 Feb 2016 20:18:30 +0100
-Subject: [PATCH 2/2] Fix for cross-compiling with host=LE and target=BE
+Subject: [PATCH 2/3] Fix for cross-compiling with host=LE and target=BE
 
 ---
  compiler/llvmGen/Llvm/Types.hs | 2 +-
@@ -47,6 +47,32 @@ index 5c2ce5e..0d52c65 100644
  #else
  fixEndian = reverse
  #endif
+-- 
+2.6.2
+
+
+From 2eda9071a85ffc10c37255fe686526d2155dd57d Mon Sep 17 00:00:00 2001
+From: Tomas Carnecky <tomas.carnecky@gmail.com>
+Date: Sun, 7 Feb 2016 00:09:29 +0100
+Subject: [PATCH 3/3] Force soft-float
+
+---
+ compiler/main/DriverPipeline.hs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/compiler/main/DriverPipeline.hs b/compiler/main/DriverPipeline.hs
+index 3de94fd..b43202e 100644
+--- a/compiler/main/DriverPipeline.hs
++++ b/compiler/main/DriverPipeline.hs
+@@ -1472,7 +1472,7 @@ runPhase (RealPhase LlvmLlc) input_fn dflags
+         abiOpts = case platformArch (targetPlatform dflags) of
+                     ArchARM _ _ HARD -> ["-float-abi=hard"]
+                     ArchARM _ _ _    -> []
+-                    _                -> []
++                    _                -> ["-float-abi=soft","-mattr=+soft-float"]
+ 
+         sseOpts | isSse4_2Enabled dflags = ["-mattr=+sse42"]
+                 | isSse2Enabled dflags   = ["-mattr=+sse2"]
 -- 
 2.6.2
 
