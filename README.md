@@ -1,5 +1,7 @@
 # onion-omega
 
+https://medium.com/@wereHamster/cross-compiling-for-the-onion-omega-1cf8ee80df02
+
 Docker images for building C and GHC toolchains for the onion omega
 IoT device.
 
