@@ -51,14 +51,17 @@ index 5c2ce5e..0d52c65 100644
 2.6.2
 
 
-From 2eda9071a85ffc10c37255fe686526d2155dd57d Mon Sep 17 00:00:00 2001
+From 5dc78ae30db00d516358581a9936fdd2d7e4d441 Mon Sep 17 00:00:00 2001
 From: Tomas Carnecky <tomas.carnecky@gmail.com>
-Date: Sun, 7 Feb 2016 00:09:29 +0100
+Date: Sun, 7 Feb 2016 01:49:49 +0100
 Subject: [PATCH 3/3] Force soft-float
 
 ---
- compiler/main/DriverPipeline.hs | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ compiler/main/DriverPipeline.hs    |  2 +-
+ libffi/ghc.mk                      |  4 +-
+ libffi/libffi-mips-softfloat.patch | 79 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 83 insertions(+), 2 deletions(-)
+ create mode 100644 libffi/libffi-mips-softfloat.patch
 
 diff --git a/compiler/main/DriverPipeline.hs b/compiler/main/DriverPipeline.hs
 index 3de94fd..b43202e 100644
@@ -73,6 +76,110 @@ index 3de94fd..b43202e 100644
  
          sseOpts | isSse4_2Enabled dflags = ["-mattr=+sse42"]
                  | isSse2Enabled dflags   = ["-mattr=+sse2"]
+diff --git a/libffi/ghc.mk b/libffi/ghc.mk
+index 404cce9..880508f 100644
+--- a/libffi/ghc.mk
++++ b/libffi/ghc.mk
+@@ -63,6 +63,9 @@ $(libffi_STAMP_CONFIGURE): $(TOUCH_DEP)
+ # will use cygwin symbolic links which cannot be read by mingw gcc.
+ 	chmod +x libffi/ln
+ 
++	# https://github.com/atgreen/libffi/issues/187
++	( cd libffi/build && "$(PATCH_CMD)" -p1 < ../libffi-mips-softfloat.patch; )
++
+ 	# We need to use -MMD rather than -MD, as otherwise we get paths
+ 	# like c:/... in the dependency files on Windows, and the extra
+ 	# colons break make
+@@ -128,4 +131,3 @@ $(eval $(call clean-target,libffi,, \
+     libffi/build $(wildcard libffi/stamp.ffi.*) libffi/dist-install))
+ 
+ endif
+-
+diff --git a/libffi/libffi-mips-softfloat.patch b/libffi/libffi-mips-softfloat.patch
+new file mode 100644
+index 0000000..3562d57
+--- /dev/null
++++ b/libffi/libffi-mips-softfloat.patch
+@@ -0,0 +1,79 @@
++--- libffi/src/mips/o32.S.orig	2014-11-08 14:47:24.000000000 +0200
+++++ libffi/src/mips/o32.S	2015-04-16 12:03:11.302116104 +0300
++@@ -82,13 +82,16 @@
++
++ 	ADDU	$sp, 4 * FFI_SIZEOF_ARG		# adjust $sp to new args
++
+++#ifndef __mips_soft_float
++ 	bnez	t0, pass_d			# make it quick for int
+++#endif
++ 	REG_L	a0, 0*FFI_SIZEOF_ARG($sp)	# just go ahead and load the
++ 	REG_L	a1, 1*FFI_SIZEOF_ARG($sp)	# four regs.
++ 	REG_L	a2, 2*FFI_SIZEOF_ARG($sp)
++ 	REG_L	a3, 3*FFI_SIZEOF_ARG($sp)
++ 	b	call_it
++
+++#ifndef __mips_soft_float
++ pass_d:
++ 	bne	t0, FFI_ARGS_D, pass_f
++ 	l.d	$f12, 0*FFI_SIZEOF_ARG($sp)	# load $fp regs from args
++@@ -130,6 +133,7 @@
++  #	bne	t0, FFI_ARGS_F_D, call_it
++ 	l.s	$f12, 0*FFI_SIZEOF_ARG($sp)	# load $fp regs from args
++ 	l.d	$f14, 2*FFI_SIZEOF_ARG($sp)	# passing double and float
+++#endif
++
++ call_it:
++ 	# Load the function pointer
++@@ -158,14 +162,23 @@
++ 	bne     t2, FFI_TYPE_FLOAT, retdouble
++ 	jalr	t9
++ 	REG_L	t0, SIZEOF_FRAME + 4*FFI_SIZEOF_ARG($fp)
+++#ifndef __mips_soft_float
++ 	s.s	$f0, 0(t0)
+++#else
+++	REG_S	v0, 0(t0)
+++#endif
++ 	b	epilogue
++
++ retdouble:
++ 	bne	t2, FFI_TYPE_DOUBLE, noretval
++ 	jalr	t9
++ 	REG_L	t0, SIZEOF_FRAME + 4*FFI_SIZEOF_ARG($fp)
+++#ifndef __mips_soft_float
++ 	s.d	$f0, 0(t0)
+++#else
+++	REG_S	v1, 4(t0)
+++	REG_S	v0, 0(t0)
+++#endif
++ 	b	epilogue
++
++ noretval:
++@@ -261,9 +274,11 @@
++ 	li	$13, 1		# FFI_O32
++ 	bne	$16, $13, 1f	# Skip fp save if FFI_O32_SOFT_FLOAT
++
+++#ifndef __mips_soft_float
++ 	# Store all possible float/double registers.
++ 	s.d	$f12, FA_0_0_OFF2($fp)
++ 	s.d	$f14, FA_1_0_OFF2($fp)
+++#endif
++ 1:
++ 	# Call ffi_closure_mips_inner_O32 to do the work.
++ 	la	t9, ffi_closure_mips_inner_O32
++@@ -281,6 +296,7 @@
++ 	li	$13, 1		# FFI_O32
++ 	bne	$16, $13, 1f	# Skip fp restore if FFI_O32_SOFT_FLOAT
++
+++#ifndef __mips_soft_float
++ 	li	$9, FFI_TYPE_FLOAT
++ 	l.s	$f0, V0_OFF2($fp)
++ 	beq	$8, $9, closure_done
++@@ -288,6 +304,7 @@
++ 	li	$9, FFI_TYPE_DOUBLE
++ 	l.d	$f0, V0_OFF2($fp)
++ 	beq	$8, $9, closure_done
+++#endif
++ 1:
++ 	REG_L	$3, V1_OFF2($fp)
++ 	REG_L	$2, V0_OFF2($fp)
 -- 
 2.6.2
 
