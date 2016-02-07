@@ -51,17 +51,17 @@ index 5c2ce5e..0d52c65 100644
 2.6.2
 
 
-From 5dc78ae30db00d516358581a9936fdd2d7e4d441 Mon Sep 17 00:00:00 2001
+From 473f7503b731a93d7fab596365f386b99d9254a6 Mon Sep 17 00:00:00 2001
 From: Tomas Carnecky <tomas.carnecky@gmail.com>
-Date: Sun, 7 Feb 2016 01:49:49 +0100
+Date: Sun, 7 Feb 2016 02:55:45 +0100
 Subject: [PATCH 3/3] Force soft-float
 
 ---
- compiler/main/DriverPipeline.hs    |  2 +-
- libffi/ghc.mk                      |  4 +-
- libffi/libffi-mips-softfloat.patch | 79 ++++++++++++++++++++++++++++++++++++++
+ compiler/main/DriverPipeline.hs |  2 +-
+ libffi/ghc.mk                   |  4 ++-
+ libffi/mips-softfloat.patch     | 79 +++++++++++++++++++++++++++++++++++++++++
  3 files changed, 83 insertions(+), 2 deletions(-)
- create mode 100644 libffi/libffi-mips-softfloat.patch
+ create mode 100644 libffi/mips-softfloat.patch
 
 diff --git a/compiler/main/DriverPipeline.hs b/compiler/main/DriverPipeline.hs
 index 3de94fd..b43202e 100644
@@ -77,7 +77,7 @@ index 3de94fd..b43202e 100644
          sseOpts | isSse4_2Enabled dflags = ["-mattr=+sse42"]
                  | isSse2Enabled dflags   = ["-mattr=+sse2"]
 diff --git a/libffi/ghc.mk b/libffi/ghc.mk
-index 404cce9..880508f 100644
+index 404cce9..225c8ca 100644
 --- a/libffi/ghc.mk
 +++ b/libffi/ghc.mk
 @@ -63,6 +63,9 @@ $(libffi_STAMP_CONFIGURE): $(TOUCH_DEP)
@@ -85,7 +85,7 @@ index 404cce9..880508f 100644
  	chmod +x libffi/ln
  
 +	# https://github.com/atgreen/libffi/issues/187
-+	( cd libffi/build && "$(PATCH_CMD)" -p1 < ../libffi-mips-softfloat.patch; )
++	( cd libffi/build && "$(PATCH_CMD)" -p1 < ../mips-softfloat.patch; )
 +
  	# We need to use -MMD rather than -MD, as otherwise we get paths
  	# like c:/... in the dependency files on Windows, and the extra
@@ -95,11 +95,11 @@ index 404cce9..880508f 100644
  
  endif
 -
-diff --git a/libffi/libffi-mips-softfloat.patch b/libffi/libffi-mips-softfloat.patch
+diff --git a/libffi/mips-softfloat.patch b/libffi/mips-softfloat.patch
 new file mode 100644
 index 0000000..3562d57
 --- /dev/null
-+++ b/libffi/libffi-mips-softfloat.patch
++++ b/libffi/mips-softfloat.patch
 @@ -0,0 +1,79 @@
 +--- libffi/src/mips/o32.S.orig	2014-11-08 14:47:24.000000000 +0200
 ++++ libffi/src/mips/o32.S	2015-04-16 12:03:11.302116104 +0300
