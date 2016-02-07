@@ -4,5 +4,6 @@ CT_ARCH_ARCH="24kc"
 CT_ARCH_TUNE="24kc"
 CT_ARCH_FLOAT_SW=y
 CT_ARCH_mips=y
+CT_TARGET_ALIAS_SED_EXPR="s/unknown-//"
 CT_KERNEL_linux=y
 CT_LIBC_musl=y
